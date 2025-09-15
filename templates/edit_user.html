@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit User - {{ user.first_name }} {{ user.last_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #212529;
+            --secondary: #495057;
+            --light: #f8f9fa;
+            --card-radius: 8px;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #495057;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: #f8f9fa;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--card-radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            border-radius: var(--card-radius) var(--card-radius) 0 0 !important;
+        }
+        
+        .form-control, .form-select, textarea.form-control {
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            padding: 0.75rem 1rem;
+        }
+        
+        .form-control:focus, .form-select:focus, textarea.form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.1);
+        }
+        
+        .btn {
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+        
+        .btn-outline-dark {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-dark:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .badge {
+            padding: 0.5em 0.8em;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .alert {
+            border-radius: var(--card-radius);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-heart-pulse"></i> Digital Healthcare
+            </a>
+            <div class="d-flex">
+                <a href="{% url 'adpanel' %}" class="btn btn-outline-dark">
+                    <i class="bi bi-arrow-left"></i> Back to Admin Panel
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>
+                <i class="bi bi-pencil-square me-2"></i>Edit User: {{ user.first_name }} {{ user.last_name }}
+                {% if profile.is_doc %}
+                    <span class="badge bg-primary">Doctor</span>
+                {% else %}
+                    <span class="badge bg-success">Patient</span>
+                {% endif %}
+            </h3>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-person-lines me-2"></i>Edit User Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="first_name" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" 
+                                           value="{{ user.first_name }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" 
+                                           value="{{ user.last_name }}" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username" 
+                                           value="{{ user.username }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="{{ user.email }}" required>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="address" class="form-label">Address</label>
+                                    <textarea class="form-control" id="address" name="address" rows="3">{{ profile.address }}</textarea>
+                                </div>
+
+                                {% if profile.is_doc %}
+                                    <div class="col-12">
+                                        <label for="spec" class="form-label">Specialization</label>
+                                        <input type="text" class="form-control" id="spec" name="spec" 
+                                               value="{{ profile.spec }}" placeholder="e.g., Cardiologist, Pediatrician">
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="license" class="form-label">License Document</label>
+                                        <input type="file" class="form-control" id="license" name="license" 
+                                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                        {% if profile.license %}
+                                            <div class="mt-2">
+                                                <small class="text-muted">Current: {{ profile.license.name }}</small>
+                                               
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+
+                                <div class="col-12">
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-circle"></i> Update User Information
+                                        </button>
+                                        <a href="{% url 'adpanel' %}" class="btn btn-outline-dark">Cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>User Status</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>Account Status:</strong><br>
+                            {% if profile.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Inactive</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>User Type:</strong><br>
+                            {% if profile.is_doc %}
+                                <span class="badge bg-primary">Doctor</span>
+                            {% else %}
+                                <span class="badge bg-success">Patient</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Member Since:</strong><br>
+                            {{ user.date_joined|date:"F d, Y" }}
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Last Login:</strong><br>
+                            {% if user.last_login %}
+                                {{ user.last_login|date:"F d, Y H:i" }}
+                            {% else %}
+                                <span class="text-muted">Never</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid">
+                            <a href="{% url 'approve' profile.id %}" 
+                               class="btn {% if profile.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} btn-sm">
+                                {% if profile.is_active %}
+                                    <i class="bi bi-x-circle"></i> Deactivate Account
+                                {% else %}
+                                    <i class="bi bi-check-circle"></i> Activate Account
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

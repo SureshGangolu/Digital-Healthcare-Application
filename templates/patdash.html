@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #212529;
+            --secondary: #495057;
+            --light: #f8f9fa;
+            --card-radius: 8px;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #495057;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: #f8f9fa;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+        }
+        
+        .nav-link {
+            color: var(--secondary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary) !important;
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--card-radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            border-radius: var(--card-radius) var(--card-radius) 0 0 !important;
+        }
+        
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            padding: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .table td {
+            padding: 0.75rem;
+            vertical-align: middle;
+            border-top: 1px solid #f1f3f7;
+        }
+        
+        .table tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .btn {
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+        }
+        
+        .btn-outline-dark {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-dark:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #198754;
+            border-color: #198754;
+        }
+        
+        .form-select, .form-control {
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            padding: 0.5rem 1rem;
+        }
+        
+        .badge {
+            padding: 0.5em 0.8em;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .alert {
+            border-radius: var(--card-radius);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-heart-pulse"></i> Digital Healthcare
+            </a>
+            <div class="d-flex">
+                <a href="{% url 'logout' %}" class="btn btn-outline-dark">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Patient Dashboard - Book Appointments</h5>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <select name="slot" class="form-select">
+                                <option selected disabled>Select Doctor & Slot</option>
+                                {% for s in slots %}
+                                    <option value="{{ s.id }}">{{ s.doc.user.first_name }} ({{ s.doc.spec }}) - {{ s.date }} at {{ s.get_time_range }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-success w-100">
+                                <i class="bi bi-calendar-plus"></i> Book Appointment
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <h6 class="mb-3"><i class="bi bi-calendar-check me-2"></i>Available Slots</h6>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Specialization</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in slots %}
+                            <tr>
+                                <td>{{ s.doc.user.first_name }}</td>
+                                <td>{{ s.doc.spec }}</td>
+                                <td>{{ s.date }}</td>
+                                <td>{{ s.get_time_range }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <i class="bi bi-calendar-x" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">No available slots</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Your Appointments</h5>
+                {% if show_all %}
+                    <a href="{% url 'patdash' %}" class="btn btn-sm btn-outline-dark">View Upcoming</a>
+                {% else %}
+                    <a href="{% url 'patdash' %}?show=all" class="btn btn-sm btn-outline-dark">View Completed</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Specialization</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Booked On</th>
+                                <th>Status</th>
+                                <th>Chat</th>
+                                <th>Reschedule</th>
+                                <th>Cancel</th>
+                                <th>Feedback</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in b %}
+                            <tr>
+                                <td>{{ i.doc.user.first_name }}</td>
+                                <td>{{ i.doc.spec }}</td>
+                                <td>{{ i.slot.date }}</td>
+                                <td>{{ i.slot.get_time_range }}</td>
+                                <td>{{ i.created|date:"d M Y H:i" }}</td>
+                                <td>
+                                    {% if i.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Confirmed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'chat' i.id %}" class="btn btn-sm btn-outline-dark">
+                                        <i class="bi bi-chat"></i>
+                                    </a>
+                                </td>
+                                
+                                <td>
+                                    {% if i.status != 'cancelled' %}
+                                        {% if i.slot.date > today or i.slot.date == today and i.slot.time > current_time %}
+                                            <a href="{% url 'reschedule_booking' i.id %}" class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-calendar-event"></i>
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if i.status != 'cancelled' %}
+                                        {% if i.slot.date > today or i.slot.date == today and i.slot.time > current_time %}
+                                            <form method="post" action="{% url 'cancel-booking-patient' i.id %}" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-muted">Completed</span>
+                                        {% endif %}
+                                    {% elif i.status == 'cancelled' %}
+                                        <span class="text-danger">Cancelled</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if i.status == 'confirmed' %}
+                                        {% if i.slot.date < today or i.slot.date == today and i.slot.time < current_time %}
+                                            {% if not i.feedback_rating %}
+                                                <form method="post" class="d-flex flex-column align-items-start">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="booking_id" value="{{ i.id }}">
+                                                    <select name="feedback_rating" class="form-select form-select-sm mb-1" required>
+                                                        <option value="" disabled selected>Rate</option>
+                                                        {% for r in "12345" %}
+                                                            <option value="{{ r }}">{{ r }} Star{% if r != "1" %}s{% endif %}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <input type="text" name="feedback_comment" placeholder="Optional comment" class="form-control form-control-sm mb-1">
+                                                    <button type="submit" class="btn btn-sm btn-outline-success">Submit</button>
+                                                </form>
+                                            {% else %}
+                                                <div class="text-warning">★ {{ i.feedback_rating }}/5</div>
+                                                {% if i.feedback_comment %}
+                                                    <small class="text-muted">{{ i.feedback_comment|truncatewords:5 }}</small>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">Upcoming</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="10" class="text-center py-4">
+                                    <i class="bi bi-calendar-x" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">You haven't booked any appointments yet.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

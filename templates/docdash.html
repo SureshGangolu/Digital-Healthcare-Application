@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #212529;
+            --secondary: #495057;
+            --light: #f8f9fa;
+            --card-radius: 8px;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #495057;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: #f8f9fa;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--card-radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            border-radius: var(--card-radius) var(--card-radius) 0 0 !important;
+        }
+        
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            padding: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .table td {
+            padding: 0.75rem;
+            vertical-align: middle;
+            border-top: 1px solid #f1f3f7;
+        }
+        
+        .table tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .btn {
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+        
+        .btn-outline-dark {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-dark:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .form-select, .form-control {
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            padding: 0.5rem 1rem;
+        }
+        
+        .badge {
+            padding: 0.5em 0.8em;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .alert {
+            border-radius: var(--card-radius);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-heart-pulse"></i> Digital Healthcare
+            </a>
+            <div class="d-flex">
+                <a href="{% url 'logout' %}" class="btn btn-outline-dark">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+        <div class="mb-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Doctor Dashboard - Availability</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">{{ f.date.label }}</label>
+                            {{ f.date }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{{ f.time.label }}</label>
+                            {{ f.time }}
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Add Slot
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-calendar me-2"></i>My Slots</h5>
+                {% if show_all %}
+                    <a href="{% url 'docdash' %}" class="btn btn-sm btn-outline-dark">View Upcoming</a>
+                {% else %}
+                    <a href="{% url 'docdash' %}?show=all" class="btn btn-sm btn-outline-dark">View Previous</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Added On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in s %}
+                                <tr>
+                                    <td>{{ i.date }}</td>
+                                    <td>{{ i.get_time_range }}</td>
+                                    <td>{{ i.created|date:"d M Y H:i" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-4">
+                                        <i class="bi bi-calendar-x" style="font-size: 2rem;"></i>
+                                        <p class="mt-2">No {% if show_all %}previous{% else %}upcoming{% endif %} slots found.</p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Booked Appointments</h5>
+                {% if show_bookings_all %}
+                    <a href="{% url 'docdash' %}" class="btn btn-sm btn-outline-dark">View Upcoming</a>
+                {% else %}
+                    <a href="{% url 'docdash' %}?show_bookings=all" class="btn btn-sm btn-outline-dark">View Previous</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Booked On</th>
+                                <th>Chat</th>
+                                <th>Status</th>
+                                <th>Reschedule</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in b %}
+                            <tr>
+                                <td>{{ i.pat.user.first_name }}</td>
+                                <td>{{ i.slot.date }}</td>
+                                <td>{{ i.slot.get_time_range }}</td>
+                                <td>{{ i.created|date:"d M Y H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'chat' i.id %}" class="btn btn-sm btn-outline-dark">
+                                        <i class="bi bi-chat"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if i.status != 'cancelled' and i.slot.date >= today %}
+                                        <form method="post" action="{% url 'cancel-booking' i.id %}" onsubmit="return confirm('Cancel this appointment?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+                                    {% elif i.status == 'cancelled' %}
+                                        <span class="text-danger">Cancelled</span>
+                                    {% else %}
+                                        <span class="text-muted">Completed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if i.status != 'cancelled' and i.slot.date >= today %}
+                                        <a href="{% url 'reschedule_booking' i.id %}" class="btn btn-sm btn-outline-info">
+                                            <i class="bi bi-calendar-event"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="bi bi-calendar-x" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">No appointments yet.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Healthcare - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #212529;
+            --secondary: #495057;
+            --light: #f8f9fa;
+            --card-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #495057;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: #f8f9fa;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 0.8rem 1.5rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+        }
+        
+        .nav-link {
+            color: var(--secondary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary) !important;
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .nav-link i {
+            margin-right: 8px;
+        }
+        
+        .container-fluid {
+            padding: 1.5rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--card-radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            border-radius: var(--card-radius) var(--card-radius) 0 0 !important;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--card-radius);
+        }
+        
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            padding: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .table td {
+            padding: 0.75rem;
+            vertical-align: middle;
+            border-top: 1px solid #f1f3f7;
+        }
+        
+        .table tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .badge {
+            padding: 0.5em 0.8em;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .btn {
+            border-radius: 6px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .license-preview {
+            max-width: 100px;
+            max-height: 100px;
+            cursor: pointer;
+            transition: transform .2s;
+            border-radius: 4px;
+        }
+        
+        .license-preview:hover {
+            transform: scale(1.05);
+        }
+        
+        .modal-license {
+            max-width: 800px;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .stats-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .stats-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-text {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-heart-pulse"></i> Digital Healthcare
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'adminstats' %}">
+                            <i class="bi bi-bar-chart"></i> Statistics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_appointments' %}">
+                            <i class="bi bi-calendar-check"></i> Appointments
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex">
+                    <a href="{% url 'logout' %}" class="btn btn-outline-dark">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card stats-card" onclick="location.href='#doctors'">
+                    <div class="stats-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stats-number">{{ d.count }}</div>
+                    <div class="stats-text">Total Doctors</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stats-card" onclick="location.href='#patients'">
+                    <div class="stats-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <div class="stats-number">{{ p.count }}</div>
+                    <div class="stats-text">Total Patients</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stats-card" onclick="location.href='{% url 'adminstats' %}'">
+                    <div class="stats-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <div class="stats-text">View Statistics</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" id="doctors">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-people me-2"></i>Doctors</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Specialization</th>
+                                <th>License</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in d %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar">
+                                            {{ i.user.first_name|first }}{{ i.user.last_name|first }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ i.user.username }}</div>
+                                            <small class="text-muted">{{ i.user.first_name }} {{ i.user.last_name }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ i.spec }}</td>
+                                <td>
+                                    {% if i.license %}
+                                        {% with lic=i.license.name|lower %}
+                                            {% if lic|slice:"-4:" == ".pdf" %}
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#licenseModal{{ i.id }}">Preview</button>
+                                                <a class="btn btn-sm btn-primary ms-1" href="{% url 'panel_download_license' i.id %}"><i class="bi bi-download"></i></a>
+                                            {% elif lic|slice:"-5:" == ".docx" or lic|slice:"-4:" == ".doc" %}
+                                                <span class="badge bg-secondary">DOC/DOCX</span>
+                                                <a class="btn btn-sm btn-primary ms-1" href="{% url 'panel_download_license' i.id %}"><i class="bi bi-download"></i></a>
+                                            {% else %}
+                                                <img src="{% url 'panel_preview_license' i.id %}" class="license-preview" data-bs-toggle="modal" data-bs-target="#licenseModal{{ i.id }}" alt="License Preview">
+                                                <a class="btn btn-sm btn-primary ms-1" href="{% url 'panel_download_license' i.id %}"><i class="bi bi-download"></i></a>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% else %}
+                                        <span class="text-muted">No license</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if i.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'approve' i.id %}" class="btn btn-sm {% if i.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                                            {% if i.is_active %}<i class="bi bi-x-circle"></i>{% else %}<i class="bi bi-check-circle"></i>{% endif %}
+                                        </a>
+                                        <a href="{% url 'doctor_feedback' i.id %}" class="btn btn-sm btn-outline-dark">
+                                            <i class="bi bi-chat-square-text"></i>
+                                        </a>
+                                        <a href="{% url 'delete_user' i.id %}" class="btn btn-sm btn-outline-dark" onclick="return confirm('Are you sure you want to remove this user? This action cannot be undone.')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        <a href="{% url 'edit_user' i.id %}" class="btn btn-sm btn-outline-dark">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" id="patients">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person me-2"></i>Patients</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in p %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar bg-secondary">
+                                            {{ i.user.first_name|first }}{{ i.user.last_name|first }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ i.user.username }}</div>
+                                            <small class="text-muted">{{ i.user.first_name }} {{ i.user.last_name }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ i.address }}</td>
+                                <td>
+                                    {% if i.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'approve' i.id %}" class="btn btn-sm {% if i.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                                            {% if i.is_active %}<i class="bi bi-x-circle"></i>{% else %}<i class="bi bi-check-circle"></i>{% endif %}
+                                        </a>
+                                        <a href="{% url 'delete_user' i.id %}" class="btn btn-sm btn-outline-dark" onclick="return confirm('Are you sure you want to remove this user? This action cannot be undone.')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        <a href="{% url 'edit_user' i.id %}" class="btn btn-sm btn-outline-dark">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        {% for i in d %}
+        <div class="modal fade" id="licenseModal{{ i.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-license">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">License - {{ i.user.first_name }} {{ i.user.last_name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% if i.license %}
+                            {% with lic=i.license.name|lower %}
+                                {% if lic|slice:"-4:" == ".pdf" %}
+                                    <iframe src="{% url 'panel_preview_license' i.id %}" style="width:100%; height:500px;" frameborder="0"></iframe>
+                                {% elif lic|slice:"-5:" == ".docx" or lic|slice:"-4:" == ".doc" %}
+                                    <p class="mb-3">This file is a Word document: {{ i.license.name|escape }}</p>
+                                {% else %}
+                                    <img src="{% url 'panel_preview_license' i.id %}" class="img-fluid" alt="License Document">
+                                {% endif %}
+                            {% endwith %}
+                            <div class="mt-3">
+                                <a class="btn btn-primary" href="{% url 'panel_download_license' i.id %}">Download</a>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No license file uploaded</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const currentLocation = location.href;
+        const menuItems = document.querySelectorAll('.nav-link');
+        const menuLength = menuItems.length;
+        
+        for (let i = 0; i < menuLength; i++) {
+            if (menuItems[i].href === currentLocation) {
+                menuItems[i].classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
