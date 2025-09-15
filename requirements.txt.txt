@@ -1,0 +1,12 @@
+# Core framework
+Django==4.2.13
+
+# File uploads (required for handling image/file attachments)
+Pillow==10.4.0
+
+# Optional: environment variable management (if you used .env files)
+python-dotenv==1.0.1
+
+# Optional: real-time features (only include if you used Channels in this build)
+# channels==4.0.0
+# daphne==4.0.0
